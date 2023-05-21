@@ -6,12 +6,22 @@ info:
   version: 1.0.0
 
 paths:
-  /friends?id=...:
+  /friends/{id}:
     post:
       summary: Add user in friends
       description: Method add user in friends
       tags:
         - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                friend_id:
+                  type: string
+                  description: The unique identifier of the user who is added as a friend
       responses:
         200:
           description: Ok
@@ -24,6 +34,16 @@ paths:
       desctiption: Method delete user in friends
       tags:
         - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                friend_id:
+                  type: string
+                  description: The unique identifier of the user who is deleted as a friend
       responses:
         200:
           description: Ok
@@ -49,7 +69,7 @@ paths:
           description: Not found
         500:
           description: Server error
-  /{id}:
+  /profile/{id}:
     get:
       summary: Request profile user
       description: Method request profile user
@@ -61,13 +81,12 @@ paths:
           content:
             application/json:
               schema:
-                type: object
                 $ref: '#/definitions/User'
         404:
           description: Not found
         500:
           description: Server error
-  /feed:
+  /feed/:
     post:
       summary: Add a post to the author's feed
       description: Method add a post to the author's feed
@@ -78,7 +97,6 @@ paths:
         content:
           application/json:
             schema:
-              type: object
               $ref: '#/definitions/Publication'
       responses: 
         200:
@@ -98,10 +116,14 @@ paths:
           application/json:
             schema:
               type: object
-              properties: 
+              properties:
+                user_id:
+                  type: string
+                  description: User ID for which the feed is being requested 
                 section:
                   type: string
                   enum: [recomended, user]
+                  description: Type of requested feed for a certain user or recommendation feed
       responses: 
         200:
           description: OK
@@ -153,18 +175,21 @@ paths:
         500:
           description: Server error
 
-  /communications/:
+  /chat/:
     get:
       summary: Dialog list request
       descriptions: Method dialog list request
       tags:
-        - Communication
+        - Chat
       requestBody:
         content:
           application/json:
             schema:
               type: object
               properties:
+                user_id:
+                  type: string
+                  description: User ID for which chats are being requested
                 count_last_message:
                   type: integer
                   format: uint32
@@ -177,17 +202,17 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/definitions/Communication'
+                  $ref: '#/definitions/Chat'
         404:
           description: Not found
         500:
           description: Server error
-  /communications/{id}:
+  /chat/{id}:
     get:
       summary: Message list request
       descriptions: Method message list request
       tags:
-        - Communication
+        - Chat
       requestBody:
         required: true
         content:
@@ -219,13 +244,12 @@ paths:
       summary: Send message into communication
       description: Method send message into communication
       tags:
-        - Communication
+        - Chat
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
               $ref: '#/definitions/Message'
       responses: 
         200:
@@ -238,7 +262,7 @@ paths:
         summary: Reading message in communication
         description: Method reading message in communication
         tags:
-          - Communication
+          - Chat
         requestBody:
           required: true
           content:
@@ -260,6 +284,32 @@ paths:
           500:
             description: Server error
 
+  /media/:
+    post:
+      summary: Add media files
+      description: Method add media files
+      tags:
+        - Media
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              propeties:
+                media_file:
+                  type: string
+                  format: binary
+                  description: binary media file
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/definitions/Media'
+        500:
+          description: Server error
+
 definitions:
   User:
     properties:
@@ -280,7 +330,9 @@ definitions:
         type: string
         description: Description of user
       avatar:
-        $ref: '#/definitions/Media'
+        type: string
+        format: binary
+        description: User avatar picture
   Publication:
     properties:
       id:
@@ -309,20 +361,20 @@ definitions:
         type: string
         enum: [image, video, audio , file]
 
-  Communication:
+  Chat:
     properties:
       id:
         type: string
-        description: A unique identifier representing a communication
+        description: A unique identifier representing a Chat
       type:
         type: string
         enum: [chat, dialog]
-        description: Type of communication. It can be a dialogue or a chat
+        description: Type of Chat. It can be a dialogue or a chat
       members:
         type: array
         items:
           $ref: '#/definitions/User'
-        description: Participants of communication
+        description: Participants of Chat
       last_message_timestamp:
         type: integer
         format: uint64
@@ -340,9 +392,9 @@ definitions:
       sender_id:
         type: string
         description: The unique ID of the sender of the message
-      communication_id:
+      chat_id:
         type: string
-        description: The unique ID of the sender of the communication
+        description: The unique ID of the sender of the Chat
       content:
         type: string
         description: Message content
