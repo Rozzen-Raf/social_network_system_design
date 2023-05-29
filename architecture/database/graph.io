@@ -1,3 +1,7 @@
+// Replication:
+// - master-slave (async)
+// - replication factor 2
+
 enum reliationship_type
 {
   friend

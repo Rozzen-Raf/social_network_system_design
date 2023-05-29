@@ -1,3 +1,15 @@
+// Replication:
+// - master-slave (one sync + async)
+// - replication factor 3
+//
+// Sharding:
+// chats: 
+// - key based by id
+// user_chat:
+// 	- key based by user_id
+//	messages:
+//  - key based by chat_id
+
 enum chat_type
 {
   chat
@@ -22,7 +34,6 @@ Table messages
   chat_id varchar
   content varchar
   send_timestamp timestamp
-  read boolean
 }
 
 Table not_read_message

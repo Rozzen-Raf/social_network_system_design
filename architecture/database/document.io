@@ -1,3 +1,14 @@
+// Replication:
+// master-slave (one sync + async)
+// replication factor 3
+//
+// Sharding:
+// 	users, posts, interesing, hashtags:
+//		- key based by id
+//	comments:
+//		- key based by post_id
+//	
+
 Table users {
   id varchar [primary key]
   description varchar
