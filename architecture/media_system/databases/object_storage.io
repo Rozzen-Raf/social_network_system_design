@@ -5,16 +5,9 @@
 // Sharding:
 // - key based by id
 
-enum media_type
-{
-  image
-  video
-  audio
-}
-
 Table media
 {
   id varchar [primary key]
   object binary
-  type media_type
+  format varchar
 }

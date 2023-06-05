@@ -1,0 +1,25 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+Person(user, "User")
+Container(loadBalancer, "Load Balancer", "Nginx", "Uses round robin")
+ContainerQueue(messageQueue, "Events queue", "Kafka", "Message queue for events by message")
+
+System_Boundary(messageSystem, "Message System") {
+    Container(messageService, "Message Service", "Go", "Create and read messages and chats", $tags="webApp")
+    Container(smartShadingService, "Smart sharding service", "Go", "The service regulates the sending of data across shards and redistributes data")
+    ContainerDb(coordDatabase, "Coodinator database", "Zookeeper", "Database for smart sharding coordination")
+    ContainerDb(messageDatabase, "Message Database", "PgSQL", "Stores long URLs by tiny URLs",  $tags="db")
+    Container(notificationService, "Notify service", "Go", "User notification service")
+}
+
+Rel(user, loadBalancer, "Request to create or read messages and chats", "REST")
+Rel(loadBalancer, messageService, "Request to create or read messages and chats", "REST")
+
+Rel(smartShadingService, coordDatabase, "Request information on shards")
+Rel(messageService, smartShadingService, "Message read and write requests")
+Rel(smartShadingService, messageDatabase, "Publishes message creation events")
+Rel(messageService, messageQueue, "Publishes click events by tiny URLs")
+Rel(notificationService, messageQueue, "Pulling event by message")
+Rel(notificationService, user, "Notify user")
+@enduml

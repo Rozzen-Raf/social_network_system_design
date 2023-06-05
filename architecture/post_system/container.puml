@@ -1,0 +1,29 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+Person(user, "User")
+Container(loadBalancer, "Load Balancer", "Nginx", "Uses round robin")
+Container(mediaSystem, "Media System", "Software system", "Accepts a request to upload media files and returns a url")
+ContainerQueue(messageQueue, "Events queue", "Kafka", "Message queue for communication between services")
+
+System_Boundary(postSystem, "Post system") {
+    Container(postService, "Post service", "Go", "Post creation and storage system", $tags="webApp")
+    Container(timelineService, "Timeline service", "Go", "Prepares cached posts for active users")
+    Container(activityService, "Activity service", "Go", "Create comments and likes for a post")
+    ContainerDb(activityDatabase, "Activity Database", "MongoDb", "Stores comments and likes")
+    ContainerDb(postDatabase, "Postdatabase", "MongoDB", "Stores users",  $tags="db")
+    ContainerDb(postCache, "Post Cache", "Tarantool", "Stores preparred posts for user",  $tags="db")
+}
+
+Rel(user, loadBalancer, "Create and receive posts for user", "REST")
+Rel(loadBalancer, timelineService, "request for posts to view", "REST")
+Rel(loadBalancer, postService, "Create user posts", "REST")
+Rel(loadBalancer, activityService, "Create comments and lies", "REST")
+
+Rel(activityService, activityDatabase, "Request to create and receive comments and likes")
+Rel(postService, postDatabase, "Create and receive posts")
+Rel(timelineService, postCache, "Gets and sets frequently requested user profiles ")
+Rel(postService, messageQueue, "Upload media-file")
+Rel(mediaSystem, messageQueue, "Passes the url of the loaded media file")
+Rel(timelineService, postService, "Get posts for user")
+@enduml

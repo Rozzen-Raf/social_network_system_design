@@ -1,0 +1,24 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+Person(user, "User")
+Container(loadBalancer, "Load Balancer", "Nginx", "Uses round robin")
+ContainerQueue(messageQueue, "Events queue", "Kafka", "Message queue for events by media")
+Container(postSystem, "Post System", "Go", "Post creation and storage system")
+
+System_Boundary(mediaSystem, "Media System") {
+    Container(mediaService, "Media Service", "Go", "Service for downloading and providing media files", $tags="webApp")
+    ContainerDb(mediaDatabase, "Media database", "S3", "Database for storing media files")
+}
+
+cloud CDN
+
+Rel(user, loadBalancer, "Request to download and receive media files", "REST")
+Rel(loadBalancer, mediaService, "Request to download and receive media files", "REST")
+
+Rel(mediaService, mediaDatabase, "Upload media and gets urls")
+Rel(postSystem, messageQueue, "Getting downloaded media files")
+Rel(mediaService, messageQueue, "Passes the url of the loaded media file")
+Rel(mediaService, CDN, "Media delivery by url")
+Rel(CDN, user, "Media delivery by url")
+@enduml

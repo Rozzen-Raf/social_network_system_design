@@ -1,0 +1,22 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+Person(user, "User")
+Container(mediaSystem, "Media system", "Software system", "Accepts a request to upload media files and returns a url")
+Container(userSystem, "User system", "Software system", "Allows you to store user accounts and manipulate them")
+Container(reliationSystem, "Reliation system", "Software system", "Establishes relationship between users")
+Container(postSystem, "Post system", "Software system", "Post creation and storage system")
+Container(messageSystem, "Message system", "Software system", "Message and chat system")
+
+cloud CDN
+
+Rel(user, mediaSystem, "Upload files")
+Rel(user, userSystem, "Requests to view and edit profiles")
+Rel(user, reliationSystem, "User inquiries about relationships with other users")
+Rel(reliationSystem, userSystem, "User Information Request")
+Rel(user, postSystem, "Requests to create and read posts")
+Rel(postSystem, mediaSystem, "Getting downloaded media files")
+Rel(user, messageSystem, "Create and read messages and chats")
+Rel(mediaSystem, CDN, "Media delivery by url")
+Rel(CDN, user, "Media delivery by url")
+@enduml

@@ -1,0 +1,22 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+Person(user, "User")
+Container(loadBalancer, "Load Balancer", "Nginx", "Uses round robin")
+Container(reliationSystem, "Reliation system", "Software system", "Establishes relationship between users")
+ContainerQueue(messageQueue, "Events queue", "Kafka", "Message queue for communication between services")
+
+System_Boundary(userSystem, "user system") {
+    Container(userService, "User service", "Go", "Allows you to store user accounts and manipulate them", $tags="webApp")
+    ContainerDb(userDatabase, "User database", "MongoDB", "Stores users",  $tags="db")
+    ContainerDb(userCache, "User cache", "Tarantool", "Stores popular users",  $tags="db")
+}
+
+Rel(user, loadBalancer, "Create and receive user profiles", "REST")
+Rel(loadBalancer, userService, "Create and receive user profiles", "REST")
+
+Rel(userService, userDatabase, "Create and receive user profiles")
+Rel(userService, userCache, "Gets and sets frequently requested user profiles ")
+Rel(userService, messageQueue, "Passes information about user profiles")
+Rel(reliationSystem, messageQueue, "Requests information on user profiles")
+@enduml
