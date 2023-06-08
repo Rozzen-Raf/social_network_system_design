@@ -27,6 +27,56 @@
 - Геораспределенности нет
 - Сезонности нет
 
+## Design overview
+
+<p align="center">
+    </br><b>Level 1.</b> System context diagram</br></br>
+</p>
+
+<p align="center">
+  <img src="images/diagrams/context.svg" />
+</p>
+
+<p align="center">
+    </br><b>Level 2.</b> User system container diagram</br></br>
+</p> 
+
+<p align="center">
+  <img src="images/diagrams/containers/user_system.svg" />
+</p>
+
+<p align="center">
+    </br><b>Level 2.</b> Post system container diagram</br></br>
+</p> 
+
+<p align="center">
+  <img src="images/diagrams/containers/post_system.svg" />
+</p>
+
+<p align="center">
+    </br><b>Level 2.</b> message system container diagram</br></br>
+</p> 
+
+<p align="center">
+  <img src="images/diagrams/containers/message_system.svg" />
+</p>
+
+<p align="center">
+    </br><b>Level 2.</b> media system container diagram</br></br>
+</p> 
+
+<p align="center">
+  <img src="images/diagrams/containers/media_system.svg" />
+</p>
+
+<p align="center">
+    </br><b>Level 2.</b> relation system container diagram</br></br>
+</p> 
+
+<p align="center">
+  <img src="images/diagrams/containers/relation_system.svg" />
+</p>
+
 ## Базовые расчеты
 
 ### Посты

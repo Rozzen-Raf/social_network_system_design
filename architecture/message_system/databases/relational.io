@@ -39,6 +39,8 @@ Table messages
 Table not_read_message
 {
   message_id varchar [note: 'ID of the message that has not yet been read. As soon as one of the recipients reads it, the entry will be deleted.']
+  chat_id varchar
+  user_id varchar
 }
 
 Ref: user_chat.chat_id > chats.id
