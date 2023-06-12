@@ -12,16 +12,18 @@ paths:
       description: Method add user in friends
       tags:
         - Users
-      requestBody:
+      parameters:
+      - name: id
+        in: path
         required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                friend_id:
-                  type: string
-                  description: The unique identifier of the user who is added as a friend
+        description: Unique user ID
+        schema:
+            type : string
+      - name: friend_id
+        in: query
+        description: The unique identifier of the user who is added as a friend
+        schema:
+          type: string
       responses:
         200:
           description: Ok
@@ -31,19 +33,19 @@ paths:
           description: Server error
     delete:
       summary: Delete user in friends
-      desctiption: Method delete user in friends
       tags:
         - Users
-      requestBody:
+      parameters:
+      - name: id
+        in: path
         required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                friend_id:
-                  type: string
-                  description: The unique identifier of the user who is deleted as a friend
+        description: Unique user ID
+        schema:
+            type : string
+      - name: friend_id
+        in: query
+        schema:
+          type: string
       responses:
         200:
           description: Ok
@@ -56,6 +58,18 @@ paths:
       description: Method request list friendsl
       tags:
         - Users
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: Unique user ID
+        schema:
+            type : string
+      - name: friend_id
+        in: query
+        description: The unique identifier of the user who is added as a friend
+        schema:
+          type: string
       responses:
         200:
           description: Ok
@@ -64,7 +78,7 @@ paths:
               schema:
                 type: array
                 items: 
-                  $ref: '#/definitions/User'
+                  $ref: '#/components/schemas/User'
         404:
           description: Not found
         500:
@@ -75,29 +89,43 @@ paths:
       description: Method request profile user
       tags:
         - Users
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: Unique user ID
+        schema:
+            type : string
       responses:
         200:
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/definitions/User'
+                $ref: '#/components/schemas/User'
         404:
           description: Not found
         500:
           description: Server error
-  /feed/:
+  /feed/{id}:
     post:
       summary: Add a post to the author's feed
       description: Method add a post to the author's feed
       tags:
         - Feed
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: User ID for which the feed is being requested
+        schema:
+          type: string
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/definitions/Publication'
+              $ref: '#/components/schemas/Publication'
       responses: 
         200:
           description: OK
@@ -110,20 +138,19 @@ paths:
       description: Method post list query
       tags:
         - Feed
-      requestBody:
+      parameters:
+      - name: id
+        in: path
         required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                user_id:
-                  type: string
-                  description: User ID for which the feed is being requested 
-                section:
-                  type: string
-                  enum: [recomended, user]
-                  description: Type of requested feed for a certain user or recommendation feed
+        description: User ID for which the feed is being requested
+        schema:
+          type: string
+      - name: section
+        in: query
+        description: Type of requested feed for a certain user or recommendation feed
+        schema:
+          type: string
+          enum: [recomended, user]
       responses: 
         200:
           description: OK
@@ -132,17 +159,23 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/definitions/Publication'
+                  $ref: '#/components/schemas/Publication'
         404:
           description: Not found
         500:
           description: Server error
-  /feed/{id}:
     patch:
       summary: Update a post to the author's feed
       description: Method update a post to the author's feed
       tags:
         - Feed
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: User ID for which the feed is being requested
+        schema:
+          type: string
       requestBody:
         content:
           application/json:
@@ -154,7 +187,7 @@ paths:
                 media:
                   type: array
                   items:
-                    $ref: '#/definitions/Media'
+                    $ref: '#/components/schemas/Media'
       responses: 
         200:
           description: OK
@@ -167,6 +200,13 @@ paths:
       description: Method delete a post to the author's feed
       tags:
         - Feed
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: User ID for which the feed is being requested
+        schema:
+          type: string
       responses: 
         200:
           description: OK
@@ -175,25 +215,25 @@ paths:
         500:
           description: Server error
 
-  /chat/:
+  /chat/{user_id}:
     get:
       summary: Dialog list request
-      descriptions: Method dialog list request
+      description: Method dialog list request
       tags:
         - Chat
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                user_id:
-                  type: string
-                  description: User ID for which chats are being requested
-                count_last_message:
-                  type: integer
-                  format: uint32
-                  description: Number of preloaded messages in dialogs
+      parameters:
+      - name: user_id
+        in: path
+        required: true
+        description: User ID for which chats are being requeste
+        schema:
+          type: string
+      - name:  count_last_message
+        in: query
+        schema:
+          type: integer
+          format: uint32
+        description: Number of preloaded messages in dialogs
       responses: 
         200:
           description: OK
@@ -202,7 +242,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/definitions/Chat'
+                  $ref: '#/components/schemas/Chat'
         404:
           description: Not found
         500:
@@ -210,23 +250,27 @@ paths:
   /chat/{id}:
     get:
       summary: Message list request
-      descriptions: Method message list request
+      description: Method message list request
       tags:
         - Chat
-      requestBody:
+      parameters:
+      - name: id
+        in: path
         required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                last_message_id:
-                  type: string
-                  description: ID of the last loaded message
-                count:
-                  type: integer
-                  format: uint32
-                  description: Number of downloaded messages
+        description: Id chat
+        schema:
+          type: string
+      - name: last_message_id
+        in: query
+        schema:
+          type: string
+        description: ID of the last loaded message
+      - name: count
+        in: query
+        schema:
+          type: integer
+          format: uint32
+        description: Number of downloaded messages
       responses: 
         200:
           description: OK
@@ -235,7 +279,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/definitions/Message'
+                  $ref: '#/components/schemas/Message'
         404:
           description: Not found
         500:
@@ -245,12 +289,19 @@ paths:
       description: Method send message into communication
       tags:
         - Chat
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: Id chat
+        schema:
+          type: string
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/definitions/Message'
+              $ref: '#/components/schemas/Message'
       responses: 
         200:
           description: OK
@@ -263,6 +314,13 @@ paths:
         description: Method reading message in communication
         tags:
           - Chat
+        parameters:
+        - name: id
+          in: path
+          required: true
+          description: Id chat
+          schema:
+            type: string
         requestBody:
           required: true
           content:
@@ -273,8 +331,9 @@ paths:
                   message_ids:
                     type: array
                     items:
-                      id:
-                        type: string
+                      properties:
+                        message_id:
+                          type: string
                     description: Read messages
         responses: 
           200:
@@ -295,7 +354,7 @@ paths:
         content:
           application/json:
             schema:
-              propeties:
+              properties:
                 media_file:
                   type: string
                   format: binary
@@ -306,107 +365,109 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/definitions/Media'
+                $ref: '#/components/schemas/Media'
         500:
           description: Server error
 
-definitions:
-  User:
-    properties:
-      id:
-        type: string
-        description: A unique identifier representing a specific user
-      name:
-        type: string
-        desctiption: FIO
-      age:
-        type: integer
-        format: uint8
-        description: User age
-      city:
-        type: string
-        description: city of user
-      description:
-        type: string
-        description: Description of user
-      avatar:
-        type: string
-        format: binary
-        description: User avatar picture
-  Publication:
-    properties:
-      id:
-        type: string
-        description: A unique identifier representing a specific publication
-      author_id:
-        type: string
-        description: The unique ID of the post author
-      content:
-        type: string
-        description: Post content
-      media:
-        type: array
-        items: 
-          $ref: '#/definitions/Media'
-
-  Media:
-    properties:
-      media_id:
-        type: string
-        description: A unique identifier representing a media resource
-      url:
-        type: string
-        description: Media URL
-      type:
-        type: string
-        enum: [image, video, audio , file]
-
-  Chat:
-    properties:
-      id:
-        type: string
-        description: A unique identifier representing a Chat
-      type:
-        type: string
-        enum: [chat, dialog]
-        description: Type of Chat. It can be a dialogue or a chat
-      members:
-        type: array
-        items:
-          $ref: '#/definitions/User'
-        description: Participants of Chat
-      last_message_timestamp:
-        type: integer
-        format: uint64
-        description: Date of the last message
-      last_messages:
-        type: array
-        items:
-          $ref: '#/definitions/Message'
-      
-  Message:
-    properties:
-      id:
-        type: string
-        description: A unique identifier representing a message
-      sender_id:
-        type: string
-        description: The unique ID of the sender of the message
-      chat_id:
-        type: string
-        description: The unique ID of the sender of the Chat
-      content:
-        type: string
-        description: Message content
-      media:
-        type: array
-        items:
-          $ref: '#/definitions/Media'
-        description: Media message files
-      sent_timestamp:
-        type: integer
-        format: uint64
-        description: Message sent time
-      read:
-        type: boolean
-        description: Message has been read
+components:
+  schemas:
+    Message:
+      type: object
+      properties:
+        id:
+          type: string
+          description: A unique identifier representing a message
+        sender_id:
+          type: string
+          description: The unique ID of the sender of the message
+        chat_id:
+          type: string
+          description: The unique ID of the sender of the Chat
+        content:
+          type: string
+          description: Message content
+        media:
+          type: array
+          items:
+            $ref: '#/components/schemas/Media'
+          description: Media message files
+        sent_timestamp:
+          type: integer
+          format: uint64
+          description: Message sent time
+        read:
+          type: boolean
+          description: Message has been read
+      required:
+        - id
+    Publication:
+      properties:
+        id:
+          type: string
+          description: A unique identifier representing a specific publication
+        author_id:
+          type: string
+          description: The unique ID of the post author
+        content:
+          type: string
+          description: Post content
+        media:
+          type: array
+          items: 
+            $ref: '#/components/schemas/Media'
+    User:
+      properties:
+        id:
+          type: string
+          description: A unique identifier representing a specific user
+        name:
+          type: string
+        age:
+          type: integer
+          format: uint8
+          description: User age
+        city:
+          type: string
+          description: city of user
+        description:
+          type: string
+          description: Description of user
+        avatar:
+          type: string
+          format: binary
+          description: User avatar picture
+  
+    Media:
+      properties:
+        media_id:
+          type: string
+          description: A unique identifier representing a media resource
+        url:
+          type: string
+          description: Media URL
+        type:
+          type: string
+          enum: [image, video, audio , file]
+  
+    Chat:
+      properties:
+        id:
+          type: string
+          description: A unique identifier representing a Chat
+        type:
+          type: string
+          enum: [chat, dialog]
+          description: Type of Chat. It can be a dialogue or a chat
+        members:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+          description: Participants of Chat
+        last_message_timestamp:
+          type: integer
+          format: uint64
+          description: Date of the last message
+        last_messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/Message'
